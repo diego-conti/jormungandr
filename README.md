@@ -28,6 +28,6 @@ The tables contained in the paper are obtained by invoking the program as
 
 If ```--surjective``` is not indicated, *Jormungandr* does not exclude cases where the root matrix is nonsurjective, and does not attempt to compute metrics.
 
-Other command line options are available; run ```jormungandr ``` without parameters for a list.
+Other command line options are available; run ```jormungandr``` without parameters for a list.
 
-The resulting output is in the subdirectory ```  tables ``` 
+The resulting output is in the subdirectory ```tables``` 
