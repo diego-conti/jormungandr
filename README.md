@@ -3,8 +3,6 @@ A program to classify nondiagonal triples on nice diagrams to construct indefini
 
 Diego Conti, Federico A. Rossi and Romeo Segnan Dalmasso, A construction of Einstein solvmanifolds not based on nilsolitons [arxiv.org/abs/2312.03125](https://arxiv.org/abs/2312.03125)
 
-The tables are
-
 ## Requirements
 
 *Jormungandr* requires [cmake](https://cmake.org/) and [Wedge](https://github.com/diego-conti/wedge)

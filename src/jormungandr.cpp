@@ -51,11 +51,29 @@ void print_help(string program_name, const po::options_description& desc) {
 	cout << desc;
 }
 
+struct PartitionRange {
+	vector<int> first;
+	vector<int> last;
+	list<vector<int>> partitions_in_range(int dimension) const {
+		auto all_partitions=partitions(dimension);
+		auto i=all_partitions.begin();
+		if (!first.empty()) 
+			while (*i!=first) ++i;
+		auto j=i;
+		if (last.empty()) j=all_partitions.end();
+		else
+			while ((*j++)!=last) ++j;
+		return {i,j};
+	}
+};
+
+
 class Runner {
 	const po::variables_map& command_line_variables;
 	Restrictions restrictions;
 	OutputOptions options;
 	string metrics_filename;
+	PartitionRange partition_range;
 	void print_metrics_filename() const {
 		if (!metrics_filename.empty()) cout<<"metrics written to "<<metrics_filename<<endl;	
 	}
@@ -69,8 +87,9 @@ class Runner {
 	}
 	template<typename... Tags>
 	void enumerate_nice_diagrams(int dimension, Tags... tags) {
-		for (auto& partition: partitions(dimension)) 
+		for (auto& partition: partition_range.partitions_in_range(dimension)) {
 			enumerate_nice_diagrams_in_partition(partition,tags...);
+		}
 	}
 	int enumerate_nice_diagrams_and_print(int dimension, surjective_type_t) {
 		cout<<"\\begin{array}{cccc}"<<endl<<"\\Delta&\\lie g & D & S\\\\"<<endl;
@@ -123,6 +142,11 @@ public:
 	}
 	int run() {
 		bool surjective=command_line_variables.count("surjective");
+		if (command_line_variables.count("from-partition"))
+			partition_range.first=command_line_variables["from-partition"].as<vector<int>>();
+		if (command_line_variables.count("to-partition"))
+			partition_range.last=command_line_variables["to-partition"].as<vector<int>>();
+
 		if (command_line_variables.count("dimension"))
 			return surjective?
 				 enumerate_nice_diagrams_and_print(command_line_variables["dimension"].as<int>(),surjective_type)
@@ -147,6 +171,8 @@ int main(int argc, char** argv) {
 		("help", "produce help message")
         ("dimension", po::value<int>(),"process all nice diagrams of dimension <arg>")
         ("partition", po::value<vector<int>>()->multitoken(),"process all nice diagrams associated to the partition <arg>")
+        ("from-partition", po::value<vector<int>>()->multitoken(),"process partitions of a fixed dimension starting from <arg>")
+        ("to-partition", po::value<vector<int>>()->multitoken(),"process partitions of a fixed dimensions until <arg>")
         ("digraph", po::value<string>(),
               "only process diagram indicated by <arg>")
 		("verbose", "print extra output")
